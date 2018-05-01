@@ -1,146 +1,90 @@
 <?php
 namespace Sellastica\Identity\Model;
 
-use Sellastica\Api\Model\IPayloadable;
-use Sellastica\Identity\Presentation\SimpleAddressProxy;
-use Sellastica\Localization\Model\Country;
-use Sellastica\Twig\Model\IProxable;
-use Sellastica\Utils\Strings;
-
-class Address implements IPayloadable, IProxable
+class Address extends BaseAddress implements \Sellastica\Twig\Model\IProxable
 {
-	/** @var string */
+	/** @var string|null */
+	protected $firstName;
+	/** @var string|null */
+	protected $lastName;
+	/** @var string|null */
 	protected $company;
-	/** @var string */
-	protected $street;
-	/** @var string */
-	protected $city;
-	/** @var string */
-	protected $zip;
-	/** @var \Sellastica\Localization\Model\Country */
-	protected $country;
 
 
 	/**
-	 * @param string $company
-	 * @param string $street
-	 * @param string $city
-	 * @param int $zip
-	 * @param Country $country
+	 * @return null|string
 	 */
-	public function __construct(
-		string $company,
-		string $street,
-		string $city,
-		$zip,
-		Country $country
-	)
+	public function getFirstName(): ?string
 	{
-		$this->company = $company;
-		$this->street = $street;
-		$this->city = $city;
-		$this->zip = Strings::removeSpaces($zip);
-		$this->country = $country;
+		return $this->firstName;
 	}
 
 	/**
-	 * @return string
+	 * @param null|string $firstName
 	 */
-	public function getCompany(): string
+	public function setFirstName(?string $firstName): void
+	{
+		$this->firstName = $firstName;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getLastName(): ?string
+	{
+		return $this->lastName;
+	}
+
+	/**
+	 * @param null|string $lastName
+	 */
+	public function setLastName(?string $lastName): void
+	{
+		$this->lastName = $lastName;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getFullName(): ?string
+	{
+		return $this->firstName || $this->lastName
+			? trim($this->firstName . ' ' . $this->lastName)
+			: null;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getCompany(): ?string
 	{
 		return $this->company;
 	}
 
 	/**
-	 * @param string $company
+	 * @param null|string $company
 	 */
-	public function setCompany(string $company)
+	public function setCompany(?string $company): void
 	{
 		$this->company = $company;
 	}
 
 	/**
-	 * @return string
-	 */
-	public function getStreet(): string
-	{
-		return $this->street;
-	}
-
-	/**
-	 * @param string $street
-	 */
-	public function setStreet(string $street)
-	{
-		$this->street = $street;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getCity(): string
-	{
-		return $this->city;
-	}
-
-	/**
-	 * @param string $city
-	 */
-	public function setCity(string $city)
-	{
-		$this->city = $city;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getZip(): string
-	{
-		return $this->zip;
-	}
-
-	/**
-	 * @param string $zip
-	 */
-	public function setZip(string $zip)
-	{
-		$this->zip = $zip;
-	}
-
-	/**
-	 * @return Country
-	 */
-	public function getCountry(): Country
-	{
-		return $this->country;
-	}
-
-	/**
-	 * @param Country $country
-	 */
-	public function setCountry(Country $country)
-	{
-		$this->country = $country;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function __toString(): string
-	{
-		return join(', ', array_filter([
-			$this->company,
-			$this->street,
-			$this->city,
-			$this->zip
-		]));
-	}
-
-	/**
-	 * @param $address
 	 * @return bool
 	 */
-	public function equals($address) //do not typehint it, we can send e.g. stdClass here
+	public function isEmpty(): bool
+	{
+		return parent::isEmpty()
+			&& !$this->firstName
+			&& !$this->lastName
+			&& !$this->company;
+	}
+
+	/**
+	 * @param Address $address
+	 * @return bool
+	 */
+	public function equals($address)
 	{
 		return $address == $this; //just ==
 	}
@@ -150,28 +94,61 @@ class Address implements IPayloadable, IProxable
 	 */
 	public function toArray(): array
 	{
-		return [
-			'company' => $this->company,
-			'street' => $this->street,
-			'city' => $this->city,
-			'zip' => $this->zip,
-			'countryCode' => $this->country->getCode(),
-		];
+		return array_merge(
+			parent::toArray(),
+			[
+				'firstName' => $this->firstName,
+				'lastName' => $this->lastName,
+				'company' => $this->company,
+			]
+		);
 	}
 
 	/**
-	 * @return \Sellastica\Identity\Presentation\SimpleAddressProxy
+	 * @param array $array
+	 * @return Address
 	 */
-	public function toProxy(): SimpleAddressProxy
+	public function merge(array $array)
 	{
-		return new SimpleAddressProxy($this);
+		$address = new self();
+		$address->setFirstName(array_key_exists('firstName', $array) ? $array['firstName'] : $this->firstName);
+		$address->setLastName(array_key_exists('lastName', $array) ? $array['lastName'] : $this->lastName);
+		$address->setCompany(array_key_exists('company', $array) ? $array['company'] : $this->company);
+		$address->setStreet(array_key_exists('street', $array) ? $array['street'] : $this->street);
+		$address->setCity(array_key_exists('city', $array) ? $array['city'] : $this->city);
+		$address->setZip(array_key_exists('zip', $array) ? $array['zip'] : $this->zip);
+		$address->setCountry(array_key_exists('countryCode', $array)
+			? \Sellastica\Localization\Model\Country::from($array['countryCode'])
+			: $this->country
+		);
+		return $address;
 	}
 
 	/**
-	 * @return \Api\Payload\SimpleAddress
+	 * @param array|\ArrayAccess $array
+	 * @return Address
 	 */
-	public function toPayloadObject(): \Api\Payload\SimpleAddress
+	public static function fromArray($array)
 	{
-		return new \Api\Payload\SimpleAddress($this);
+		$address = new self();
+		$address->setFirstName($array['firstName'] ?? null);
+		$address->setLastName($array['lastName'] ?? null);
+		$address->setCompany($array['company'] ?? null);
+		$address->setStreet($array['street'] ?? null);
+		$address->setCity($array['city'] ?? null);
+		$address->setZip($array['zip'] ?? null);
+		$address->setCountry(isset($array['countryCode'])
+			? \Sellastica\Localization\Model\Country::from($array['countryCode'])
+			: null
+		);
+		return $address;
+	}
+
+	/**
+	 * @return \Sellastica\Identity\Presentation\AddressProxy
+	 */
+	public function toProxy()
+	{
+		return new \Sellastica\Identity\Presentation\AddressProxy($this);
 	}
 }

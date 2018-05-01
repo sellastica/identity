@@ -6,7 +6,9 @@ use Nette\Utils\Strings;
 class Contact
 {
 	/** @var string */
-	private $fullName;
+	private $firstName;
+	/** @var string */
+	private $lastName;
 	/** @var Email */
 	private $email;
 	/** @var string|null */
@@ -14,17 +16,20 @@ class Contact
 
 
 	/**
-	 * @param string $fullName
+	 * @param string $firstName
+	 * @param string $lastName
 	 * @param Email $email
 	 * @param string|null $phone
 	 */
 	public function __construct(
-		string $fullName,
+		string $firstName,
+		string $lastName,
 		Email $email,
 		string $phone = null
 	)
 	{
-		$this->fullName = $fullName;
+		$this->firstName = $firstName;
+		$this->lastName = $lastName;
 		$this->email = $email;
 		$this->phone = $phone;
 	}
@@ -32,49 +37,41 @@ class Contact
 	/**
 	 * @return string
 	 */
+	public function getFirstName(): string
+	{
+		return $this->firstName;
+	}
+
+	/**
+	 * @param string $firstName
+	 */
+	public function setFirstName(string $firstName): void
+	{
+		$this->firstName = $firstName;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getLastName(): string
+	{
+		return $this->lastName;
+	}
+
+	/**
+	 * @param string $lastName
+	 */
+	public function setLastName(string $lastName): void
+	{
+		$this->lastName = $lastName;
+	}
+
+	/**
+	 * @return string
+	 */
 	public function getFullName(): string
 	{
-		return $this->fullName;
-	}
-
-	/**
-	 * @param string $fullName
-	 */
-	public function setFullName(string $fullName)
-	{
-		$this->fullName = $fullName;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function parseFullNameToFirstAndLastName(): array
-	{
-		if (strpos($this->fullName, ' ') !== false) {
-			$firstName = Strings::before($this->fullName, ' ');
-			$lastName = Strings::after($this->fullName, ' ');
-		} else {
-			$firstName = null;
-			$lastName = $this->fullName;
-		}
-
-		return [$firstName, $lastName];
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function parseFirstName(): ?string
-	{
-		return $this->parseFullNameToFirstAndLastName()[0];
-	}
-
-	/**
-	 * @return null|string
-	 */
-	public function parseLastName(): ?string
-	{
-		return $this->parseFullNameToFirstAndLastName()[1];
+		return $this->firstName . ' ' . $this->lastName;
 	}
 
 	/**
@@ -115,7 +112,8 @@ class Contact
 	public function toArray(): array
 	{
 		return [
-			'fullName' => $this->fullName,
+			'firstName' => $this->firstName,
+			'lastName' => $this->lastName,
 			'email' => $this->email->getEmail(),
 			'phone' => $this->phone,
 		];
@@ -125,10 +123,11 @@ class Contact
 	 * @param array $array
 	 * @return self
 	 */
-	public function modify(array $array)
+	public function merge(array $array)
 	{
 		return new self(
-			$array['fullName'] ?? $this->fullName,
+			$array['firstName'] ?? $this->firstName,
+			$array['lastName'] ?? $this->lastName,
 			isset($array['email']) ? new Email($array['email']) : $this->email,
 			$array['phone'] ?? $this->phone
 		);
