@@ -1,8 +1,6 @@
 <?php
 namespace Sellastica\Identity\Model;
 
-use Nette\Utils\Strings;
-
 class Contact
 {
 	/** @var string */
@@ -13,6 +11,13 @@ class Contact
 	private $email;
 	/** @var string|null */
 	private $phone;
+	/** @var string|null */
+	private $phone2;
+	/** @var string|null */
+	private $degree;
+	/** @var Sex|null */
+	private $sex;
+
 
 
 	/**
@@ -85,7 +90,7 @@ class Contact
 	/**
 	 * @param null|string $phone
 	 */
-	public function setPhone(?string $phone)
+	public function setPhone(?string $phone): void
 	{
 		$this->phone = $phone;
 	}
@@ -101,9 +106,57 @@ class Contact
 	/**
 	 * @param Email $email
 	 */
-	public function setEmail(Email $email)
+	public function setEmail(Email $email): void
 	{
 		$this->email = $email;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getPhone2(): ?string
+	{
+		return $this->phone2;
+	}
+
+	/**
+	 * @param null|string $phone2
+	 */
+	public function setPhone2(?string $phone2): void
+	{
+		$this->phone2 = $phone2;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getDegree(): ?string
+	{
+		return $this->degree;
+	}
+
+	/**
+	 * @param null|string $degree
+	 */
+	public function setDegree(?string $degree): void
+	{
+		$this->degree = $degree;
+	}
+
+	/**
+	 * @return null|\Sellastica\Identity\Model\Sex
+	 */
+	public function getSex(): ?\Sellastica\Identity\Model\Sex
+	{
+		return $this->sex;
+	}
+
+	/**
+	 * @param null|\Sellastica\Identity\Model\Sex $sex
+	 */
+	public function setSex(?\Sellastica\Identity\Model\Sex $sex): void
+	{
+		$this->sex = $sex;
 	}
 
 	/**
@@ -116,33 +169,46 @@ class Contact
 			'lastName' => $this->lastName,
 			'email' => $this->email->getEmail(),
 			'phone' => $this->phone,
+			'phone2' => $this->phone2,
+			'degree' => $this->degree,
+			'sex' => $this->sex ? $this->sex->getSex() : null,
 		];
 	}
 
 	/**
 	 * @param array $array
-	 * @return self
+	 * @return Contact
 	 */
-	public function merge(array $array)
+	public function merge(array $array): Contact
 	{
-		return new self(
+		$contact = new self(
 			$array['firstName'] ?? $this->firstName,
 			$array['lastName'] ?? $this->lastName,
 			isset($array['email']) ? new Email($array['email']) : $this->email,
 			$array['phone'] ?? $this->phone
 		);
+		$contact->setPhone2($array['phone2'] ?? $this->phone2);
+		$contact->setDegree($array['degree'] ?? $this->degree);
+		$contact->setSex(isset($array['sex']) ? Sex::from($array['sex']) : $this->sex);
+
+		return $contact;
 	}
 
 	/**
 	 * @param array|\ArrayAccess $array
-	 * @return self
+	 * @return Contact
 	 */
-	public static function fromArray($array): self
+	public static function fromArray($array): Contact
 	{
-		return new self(
+		$contact = new self(
 			$array['fullName'],
 			new Email($array['email']),
 			$array['phone'] ?? null
 		);
+		$contact->setPhone2($array['phone2'] ?? null);
+		$contact->setDegree($array['degree'] ?? null);
+		$contact->setSex(isset($array['sex']) ? Sex::from($array['sex']) : null);
+
+		return $contact;
 	}
 }
