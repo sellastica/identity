@@ -76,7 +76,7 @@ class Contact
 	 */
 	public function getFullName(): string
 	{
-		return $this->firstName . ' ' . $this->lastName;
+		return trim($this->firstName . ' ' . $this->lastName);
 	}
 
 	/**
