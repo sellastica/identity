@@ -33,6 +33,14 @@ class Sex
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getTitle(): string
+	{
+		return self::$options[$this->sex];
+	}
+
+	/**
 	 * @param string $sex
 	 * @return Sex
 	 * @throws \InvalidArgumentException
@@ -44,5 +52,21 @@ class Sex
 		}
 
 		return new self($sex);
+	}
+
+	/**
+	 * @return Sex
+	 */
+	public static function male(): Sex
+	{
+		return new self(self::MALE);
+	}
+
+	/**
+	 * @return Sex
+	 */
+	public static function female(): Sex
+	{
+		return new self(self::FEMALE);
 	}
 }

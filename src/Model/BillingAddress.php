@@ -76,6 +76,7 @@ class BillingAddress extends Address implements \Sellastica\Twig\Model\IProxable
 		return join(', ', array_filter([
 			$this->company,
 			$this->street,
+			$this->houseNumber,
 			$this->city,
 			$this->zip,
 			$this->country->getTitle()
@@ -107,6 +108,7 @@ class BillingAddress extends Address implements \Sellastica\Twig\Model\IProxable
 		$address->setLastName(array_key_exists('lastName', $array) ? $array['lastName'] : $this->lastName);
 		$address->setCompany(array_key_exists('company', $array) ? $array['company'] : $this->company);
 		$address->setStreet(array_key_exists('street', $array) ? $array['street'] : $this->street);
+		$address->setHouseNumber(array_key_exists('houseNumber', $array) ? $array['houseNumber'] : $this->houseNumber);
 		$address->setCity(array_key_exists('city', $array) ? $array['city'] : $this->city);
 		$address->setZip(array_key_exists('zip', $array) ? $array['zip'] : $this->zip);
 		$address->setCountry(array_key_exists('countryCode', $array)
@@ -130,6 +132,7 @@ class BillingAddress extends Address implements \Sellastica\Twig\Model\IProxable
 		$address->setLastName($array['lastName'] ?? null);
 		$address->setCompany($array['company'] ?? null);
 		$address->setStreet($array['street'] ?? null);
+		$address->setHouseNumber($array['houseNumber'] ?? null);
 		$address->setCity($array['city'] ?? null);
 		$address->setZip($array['zip'] ?? null);
 		$address->setCountry(isset($array['countryCode'])

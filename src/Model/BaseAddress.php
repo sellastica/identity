@@ -6,6 +6,8 @@ class BaseAddress implements \Sellastica\Api\Model\IPayloadable, \Sellastica\Twi
 	/** @var string|null */
 	protected $street;
 	/** @var string|null */
+	protected $houseNumber;
+	/** @var string|null */
 	protected $city;
 	/** @var string|null */
 	protected $zip;
@@ -27,6 +29,22 @@ class BaseAddress implements \Sellastica\Api\Model\IPayloadable, \Sellastica\Twi
 	public function setStreet(?string $street): void
 	{
 		$this->street = $street;
+	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getHouseNumber(): ?string
+	{
+		return $this->houseNumber;
+	}
+
+	/**
+	 * @param null|string $houseNumber
+	 */
+	public function setHouseNumber(?string $houseNumber): void
+	{
+		$this->houseNumber = $houseNumber;
 	}
 
 	/**
@@ -84,6 +102,7 @@ class BaseAddress implements \Sellastica\Api\Model\IPayloadable, \Sellastica\Twi
 	{
 		return join(', ', array_filter([
 			$this->street,
+			$this->houseNumber,
 			$this->city,
 			$this->zip
 		]));
@@ -95,6 +114,7 @@ class BaseAddress implements \Sellastica\Api\Model\IPayloadable, \Sellastica\Twi
 	public function isEmpty(): bool
 	{
 		return !$this->street
+			&& !$this->houseNumber
 			&& !$this->city
 			&& !$this->zip
 			&& !$this->country;
@@ -116,6 +136,7 @@ class BaseAddress implements \Sellastica\Api\Model\IPayloadable, \Sellastica\Twi
 	{
 		return [
 			'street' => $this->street,
+			'houseNumber' => $this->houseNumber,
 			'city' => $this->city,
 			'zip' => $this->zip,
 			'countryCode' => $this->country ? $this->country->getCode() : null,
@@ -130,6 +151,7 @@ class BaseAddress implements \Sellastica\Api\Model\IPayloadable, \Sellastica\Twi
 	{
 		$address = new self();
 		$address->setStreet($array['street'] ?? null);
+		$address->setHouseNumber($array['houseNumber'] ?? null);
 		$address->setCity($array['city'] ?? null);
 		$address->setZip($array['zip'] ?? null);
 		$address->setCountry(isset($array['countryCode'])
