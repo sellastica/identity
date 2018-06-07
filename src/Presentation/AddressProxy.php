@@ -56,9 +56,9 @@ class AddressProxy extends \Sellastica\Twig\Model\ProxyEntity
 	}
 
 	/**
-	 * @return \Sellastica\Localization\Presentation\CountryProxy
+	 * @return \Sellastica\Localization\Presentation\CountryProxy|null
 	 */
-	public function getCountry(): \Sellastica\Localization\Presentation\CountryProxy
+	public function getCountry(): ?\Sellastica\Localization\Presentation\CountryProxy
 	{
 		return $this->parent->getCountry()
 			? $this->parent->getCountry()->toProxy()
