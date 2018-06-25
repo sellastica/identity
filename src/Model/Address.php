@@ -12,11 +12,12 @@ class Address extends BaseAddress implements \Sellastica\Twig\Model\IProxable
 
 
 	/**
+	 * @param bool $firstNameFirst
 	 * @return null|string
 	 */
-	public function getCompanyOrFullName(): ?string
+	public function getCompanyOrFullName(bool $firstNameFirst = true): ?string
 	{
-		return $this->company ?: $this->getFullName();
+		return $this->company ?: $this->getFullName($firstNameFirst);
 	}
 
 	/**
@@ -52,13 +53,18 @@ class Address extends BaseAddress implements \Sellastica\Twig\Model\IProxable
 	}
 
 	/**
+	 * @param bool $firstNameFirst
 	 * @return null|string
 	 */
-	public function getFullName(): ?string
+	public function getFullName(bool $firstNameFirst = true): ?string
 	{
-		return $this->firstName || $this->lastName
-			? trim($this->firstName . ' ' . $this->lastName)
-			: null;
+		if (!$this->firstName && !$this->lastName) {
+			return null;
+		} elseif ($firstNameFirst) {
+			return trim($this->firstName . ' ' . $this->lastName);
+		} else {
+			return trim($this->lastName . ' ' . $this->firstName);
+		}
 	}
 
 	/**
