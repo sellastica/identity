@@ -39,6 +39,14 @@ class AddressProxy extends \Sellastica\Twig\Model\ProxyEntity
 		return $this->parent->getStreet();
 	}
 
+    /**
+     * @return null|string
+     */
+    public function getHouse_number(): ?string
+    {
+        return $this->parent->getHouseNumber();
+    }
+
 	/**
 	 * @return string|null
 	 */
@@ -92,6 +100,7 @@ class AddressProxy extends \Sellastica\Twig\Model\ProxyEntity
 			'first_name',
 			'last_name',
 			'street',
+            'house_number',
 			'city',
 			'zip',
 			'country',
